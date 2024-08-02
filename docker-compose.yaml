@@ -1,14 +1,74 @@
+version: '3.8'
+ 
 services:
-  rabbitmq:
-    image: rabbitmq:management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"  # RabbitMQ port
-      - "15672:15672"  # Management UI port
+  rabbitmq1:
+    image: rabbitmq:3-management
+    hostname: rabbitmq1
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
       - ./definitions.json:/etc/rabbitmq/definitions.json
-    command: ["rabbitmq-server"]
     environment:
-      RABBITMQ_DEFAULT_USER: "user"
-      RABBITMQ_DEFAULT_PASS: "password"
+      RABBITMQ_NODENAME: 'rabbit@rabbitmq1'
+      RABBITMQ_ERLANG_COOKIE: 'cookie_monster'
+    ports:
+      - "15671:15672"
+    networks:
+      rabbitmq_cluster:
+        aliases:
+          - rabbitmq1
+ 
+  rabbitmq2:
+    image: rabbitmq:3-management
+    links:
+      - rabbitmq1
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./definitions.json:/etc/rabbitmq/definitions.json
+    hostname: rabbitmq2
+    environment:
+      RABBITMQ_NODENAME: 'rabbit@rabbitmq2'
+      RABBITMQ_ERLANG_COOKIE: 'cookie_monster'
+    ports:
+      - "15673:15672"
+    networks:
+      rabbitmq_cluster:
+        aliases:
+          - rabbitmq2
+ 
+ 
+  rabbitmq3:
+    image: rabbitmq:3-management
+    hostname: rabbitmq3
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./definitions.json:/etc/rabbitmq/definitions.json
+    links:
+      - rabbitmq1
+      - rabbitmq2
+    ports:
+      - "15674:15672"
+    environment:
+      RABBITMQ_NODENAME: 'rabbit@rabbitmq3'
+      RABBITMQ_ERLANG_COOKIE: 'cookie_monster'
+    networks:
+      rabbitmq_cluster:
+        aliases:
+          - rabbitmq3
+ 
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+      - "5672:5672"
+    depends_on:
+      - rabbitmq1
+      - rabbitmq2
+      - rabbitmq3
+    networks:
+      rabbitmq_cluster:
+ 
+networks:
+  rabbitmq_cluster:
+    driver: bridge

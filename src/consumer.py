@@ -8,7 +8,7 @@ def main(queue_name):
     connection = pika.BlockingConnection(
         pika.ConnectionParameters('localhost', 5672, '/', credentials)
     )
-    channel = connection.channel()
+    channel = connection.channel(channel_number=1)
 
     channel.queue_declare(queue=queue_name, durable=True)
 

@@ -5,7 +5,7 @@ def main(exchange, routing_key, message):
     connection = pika.BlockingConnection(
         pika.ConnectionParameters('localhost', 5672, '/', credentials)
     )
-    channel = connection.channel()
+    channel = connection.channel(channel_number=1)
 
     #channel.exchange_declare(exchange=exchange, exchange_type='direct', durable=True)
 
