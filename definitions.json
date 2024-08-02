@@ -1,0 +1,63 @@
+{
+    "users": [
+        {
+            "name": "user",
+            "password_hash": "kxvnnQDJBlfzJAgwsBCht6nQokXmj1+N/oZp664+4X5ySN3r",
+            "tags": "administrator"
+        }
+    ],
+    "vhosts": [
+        {
+            "name": "/"
+        }
+    ],
+    "permissions": [
+        {
+            "user": "user",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "policies": [],
+    "queues": [
+        {
+            "name": "queue1",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false
+        },
+        {
+            "name": "queue2",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false
+        }
+    ],
+    "exchanges": [
+        {
+            "name": "my_exchange",
+            "type": "direct",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": true
+        }
+    ],
+    "bindings": [
+        {
+            "source": "my_exchange",
+            "vhost": "/",
+            "destination": "queue1",
+            "destination_type": "queue",
+            "routing_key": "routing_key1"
+        },
+        {
+            "source": "my_exchange",
+            "vhost": "/",
+            "destination": "queue2",
+            "destination_type": "queue",
+            "routing_key": "routing_key2"
+        }
+    ]
+}
